@@ -2,13 +2,10 @@ package au.com.fairfaxmedia.newsapp
 
 import android.support.test.InstrumentationRegistry
 import android.support.test.espresso.Espresso.onView
-import android.support.test.espresso.ViewInteraction
 import android.support.test.espresso.action.ViewActions.click
-import android.support.test.espresso.action.ViewActions.scrollTo
+import android.support.test.espresso.assertion.ViewAssertions.doesNotExist
 import android.support.test.espresso.assertion.ViewAssertions.matches
 import android.support.test.espresso.contrib.RecyclerViewActions
-import android.support.test.espresso.contrib.RecyclerViewActions.scrollToPosition
-import android.support.test.espresso.matcher.BoundedMatcher
 import android.support.test.espresso.matcher.ViewMatchers.*
 import android.support.test.runner.AndroidJUnit4
 
@@ -18,15 +15,8 @@ import org.junit.runner.RunWith
 import org.junit.Assert.*
 import au.com.fairfaxmedia.newsapp.view.activity.MainActivity
 import android.support.test.rule.ActivityTestRule
-import android.support.v7.widget.RecyclerView
-import android.util.Log
-import android.view.View
-import android.widget.RelativeLayout
 import au.com.fairfaxmedia.newsapp.view.adapter.NewsListViewHolder
 import kotlinx.android.synthetic.main.fragment_listview.*
-import org.hamcrest.CoreMatchers.allOf
-import org.hamcrest.Description
-import org.hamcrest.Matcher
 import org.junit.Assert
 import org.junit.Rule
 
@@ -50,7 +40,8 @@ class ExampleInstrumentedTest {
         assertEquals("au.com.fairfaxmedia.newsapp", appContext.packageName)
     }
 
-
+    //This test clicks on the first news item and navigate to article details screen
+    //There it verifies that web view is present
     @Test
     fun navigateToArticleDetails() {
         //Find the first cell in recycle view and tap on it to go to article detail screen
@@ -66,14 +57,22 @@ class ExampleInstrumentedTest {
     //As the view is same for each news story, no need to check this for each news item
     @Test
     fun verifyFieldsExist() {
-         //Find the first news item using id=0 (this was set in NewsListViewHolder.
-         //Then, check its got 4 children each with specific ids
-         onView(withId(0))
-                .check(matches(hasChildCount(4)))
-                .check(matches(hasDescendant(withId(R.id.headline))))
-                .check(matches(hasDescendant(withId(R.id.thumbnail))))
-                .check(matches(hasDescendant(withId(R.id.theAbstract))))
-                .check(matches(hasDescendant(withId(R.id.byLine))))
+        //Find the news item using id (this was set in NewsListViewHolder).
+        //Then, check its got 4 children each with specific ids
+
+        val totalCount = mActivityRule.activity.recycler_view.adapter.itemCount-1
+        for (i in 0..totalCount)
+        {
+            onView(withId(R.id.recycler_view))
+                    .perform(RecyclerViewActions.scrollToPosition<NewsListViewHolder>(i))
+
+            onView(withId(i))
+                    .check(matches(hasChildCount(4)))
+                    .check(matches(hasDescendant(withId(R.id.headline))))
+                    .check(matches(hasDescendant(withId(R.id.thumbnail))))
+                    .check(matches(hasDescendant(withId(R.id.theAbstract))))
+                    .check(matches(hasDescendant(withId(R.id.byLine))))
+        }
     }
 
     @Test
@@ -82,14 +81,23 @@ class ExampleInstrumentedTest {
         //Check that total item in the news adapter is not more than 10
         Assert.assertTrue(mActivityRule.activity.recycler_view.adapter.itemCount<=10)
         //Now, check that every news item is displayed on the view
-        var newsIndex = 0
-        do{
+        val totalCount = mActivityRule.activity.recycler_view.adapter.itemCount-1
+        for (i in 0..totalCount)
+        {
             onView(withId(R.id.recycler_view))
-                    .perform(RecyclerViewActions.scrollToPosition<NewsListViewHolder>(newsIndex))
-                    .check(matches(isDisplayed()))
-            newsIndex+=1
-        }while(newsIndex<=mActivityRule.activity.recycler_view.adapter.itemCount)
+                    .perform(RecyclerViewActions.scrollToPosition<NewsListViewHolder>(i))
 
+            onView(withId(i))
+                    .check(matches(isDisplayed()))
+
+        }
+
+        //Verify that count+1 item doesn't exist
+        onView(withId(R.id.recycler_view))
+                .perform(RecyclerViewActions.scrollToPosition<NewsListViewHolder>(totalCount+1))
+
+        onView(withId(totalCount+1))
+                .check(doesNotExist())
     }
 
 
