@@ -1,5 +1,5 @@
 
-## Suggested Tests
+## Tests cases
 
 1) Verify, stories has image, headline, theAbstract and byLine on index screen
  - Implemented and passed
@@ -10,27 +10,31 @@
  
  ## Submission Notes
 
-* Design pattern : I have not used any design pattern in perticular as it is such a small app with only two screens. However, I would typically 
-  implement a page object pattern for larger apps. In page object pattern, there is one class with set of methods that represents a screen. 
+* Design pattern : 
+  I have not used any design pattern in perticular as it is such a small app with only two screens. However, I would typically 
+  implement a page object pattern for larger apps. In page object pattern, there is one class with set of methods that represents a   screen. 
   Then, there is a wrapper class that contains methods containing calls to different methods of a class representing a screen.
   
 * Explain what each test does in code comments or in document
+  
   Explanation is given in code comment.
   
 * Test report, it could be generated or simply in document with pass/fail status
+  
   All 3 tests passed.
   
 * If you had to modify Application/Product code for testability, mention the changes you made
+  
   I had to make below change in application code so that each itemView can be easily located and test can be made more robust.
   
    In file - NewsListAdapter.java
-
+```
     @Override
     public void onBindViewHolder(NewsListViewHolder holder, int position) {
         holder.itemView.setId(position); // Added this line to set Id for each itemView
         mNewsListPresenter.onBindViewHolderAtPosition(holder, position);
     }
-
+```
 
 * Any 3rd party libraries used and rational ?
   only had to use hemcrest library for matcher functions
